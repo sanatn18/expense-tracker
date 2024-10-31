@@ -50,12 +50,16 @@ export const deleteExpense = async (id) => {
 };
 
 export const updateExpenseAPI = async(updatedExpense) =>{
-    return new Promise((resolve)=>{
-        setTimeout(()=>{
-            expenses = expenses.map((expense)=>
-                expense.id === updatedExpense.id ? updatedExpense : expense
-        );
-        resolve(updatedExpense);
-        },500);
-    })
+    const response = await fetch(`http://localhost:5000/api/expenses/${updatedExpense.id}`,{
+        method:'PUT',
+        headers: {
+            'Content-Type':'application/json',
+        },
+        body: JSON.stringify(updatedExpense)
+
+    });
+    if (!response.ok){
+        throw new Error("Failed to update expense");
+    }
+    return response.json(); //will return the updated expense from backend.
 }

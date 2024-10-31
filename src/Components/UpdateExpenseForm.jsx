@@ -1,20 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateExpense } from "../redux/expensesSlice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { updateExpenseAPI } from '../services/expenseService';
+// import { updateExpenseAPI } from '../services/expenseService';
 
-const UpdateExpenseForm = ({expense}) => {
+const UpdateExpenseForm = ({expense, onCancel}) => {
     const [name, setName] = useState(expense.name);
     const [amount, setAmount] = useState(expense.amount);
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
 
+    const mutation = useMutation({
+        mutationFn: async (updatedExpense) => {
 
-    const mutation = useMutation(updateExpenseAPI, {     //we’re providing an onSuccess callback that runs if the API request completes
-        onSuccess: (updatedExpense) => {                 //onSuccess receives updatedExpense as its argument. This updatedExpense represents the response returned by updateExpenseAPI 
-            queryClient.invalidateQueries(['expenses']); 
-            dispatch(updateExpense(updatedExpense));     //by dispatching this action, we update the local redux state with the updated expense data,
+            // const checkResponse = await fetch(`http://localhost:5000/api/expenses/${updatedExpense.id}`);
+            // if (!checkResponse.ok) {
+            //     throw new Error('Expense not found');
+            // }
+
+            const response = await fetch(`http://localhost:5000/api/expenses/${updatedExpense.id}`, {  // use the backend port here
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',// indicates that the request body will be in JSON format since the backend expects JSON data for correct parsing.
+                },
+                body: JSON.stringify(updatedExpense), //converts the updatedExpense object into a JSON-formatted string so it can be sent in the request
+            });
+
+            if (!response.ok) {
+                if (response.status === 404){
+                    throw new Error('Failed to update expense');
+                }else {
+                    throw new Error('Failed to Update')
+                }
+            }
+            return response.json();
+        },
+        onSuccess: (updatedExpense) => {
+            queryClient.invalidateQueries(['expenses']); // This refetches the 'expenses' query
+            dispatch(updateExpense(updatedExpense)); // Update Redux store if needed
+            onCancel(); //closes the update option once user clicks update expense button
+        },
+        onError: (error) => {
+            console.error(error); 
         },
     });
 
@@ -27,6 +54,11 @@ const UpdateExpenseForm = ({expense}) => {
         };
         mutation.mutate(updatedExpense); //triggers the mutation(update action) to send the updated expense to the backend.
     };
+
+    useEffect(()=>{
+        setName(expense.name);
+        setAmount(expense.amount);
+    }, [expense]);
 
     return(
         <form onSubmit={handleSubmit}>
@@ -41,6 +73,7 @@ const UpdateExpenseForm = ({expense}) => {
                 onChange={(e)=>setAmount(e.target.value)}
             />
             <button type="submit">Update Expense</button>
+            <button type="button" onClick={onCancel}>Cancel</button>
         </form>
     );
 };
