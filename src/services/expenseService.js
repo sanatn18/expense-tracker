@@ -1,4 +1,4 @@
-let expenses = [];
+// let expenses = [];
 
 // export const getExpenses = async() =>{
 //     return new Promise((resolve)=>{
@@ -9,11 +9,11 @@ let expenses = [];
 // }
 
 export const getExpenses = async () => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve([...expenses]); // Returning a copy of expenses to avoid direct mutation issues
-        }, 1000);
-    });
+    const response = await fetch('http://localhost:5000/api/expenses')
+    if (!response.ok){
+        throw new Error("Failed to fetch expense");
+    }
+    return response.json();
 };
 
 // export const addNewExpense = async(expense) => {
@@ -26,24 +26,28 @@ export const getExpenses = async () => {
 // }
 
 export const addNewExpense = async (expense) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            expenses.push(expense); // Add expense to the array
-            resolve(expense); // Resolve with the newly added expense
-            console.log("New Expense Added:", expense); 
-            console.log("Current Expenses:", expenses); 
-        }, 1000);
+    const response = await fetch('http://localhost:5000/api/expenses', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(expense)
     });
+    if (!response.ok) {
+        throw new Error("Failed to add expense");
+    }
+    return response.json(); // returns the newly created expense from the backend
 };
 
-export const deleteExpense = async(id) =>{
-    return new Promise((resolve)=>{
-        setTimeout(()=>{
-            expenses = expenses.filter((expense)=> expense.id !== id);
-            resolve(id);
-        },500);
-    })
-}
+export const deleteExpense = async (id) => {
+    const response = await fetch(`http://localhost:5000/api/expenses/${id}`, {
+        method: 'DELETE',
+    });
+    if (!response.ok) {
+        throw new Error("Failed to delete expense");
+    }
+    return id; // returning id as resolved value after successful delete
+};
 
 export const updateExpenseAPI = async(updatedExpense) =>{
     return new Promise((resolve)=>{
