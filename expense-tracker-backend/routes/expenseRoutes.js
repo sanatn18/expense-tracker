@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', getAllExpenses);
 router.post('/', addExpense);
 router.delete('/:id', deleteExpense);
-router.put('/api/expenses/:id', updateExpense);
+router.put('/:id', updateExpense);
 
 
 export default router;

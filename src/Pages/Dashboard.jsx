@@ -49,31 +49,34 @@ const Dashboard = () => {
     if(isLoading) return <div>Loading...</div>
     if(error) return <div>Error Fetching Expenses</div>
 
-    return(
+    return (
         <div>
             <h1>Expense Tracker Dashboard</h1>
-            <AddExpenseForm/>
+            <AddExpenseForm />
+            
             {editingExpense ? (
                 <div>
                     <h2>Update Expense</h2>
-                    <UpdateExpenseForm expense={editingExpense} onCancel={handleCancelEdit}/>
+                    <UpdateExpenseForm expense={editingExpense} onCancel={handleCancelEdit} />
                 </div>
-            ): null}
-            {expenses.length > 0 ? (
-                <ul>
-                    {expenses.map((expense) => (
-                        <li key={expense.id}>
-                            {expense.name} : ${expense.amount}
-                            <button onClick={()=>handleEdit(expense)}>Edit</button>
-                            <button onClick={() => handleDelete(expense.id)}>Delete</button>
-                        </li>
-                    ))}
-                </ul>
             ) : (
-                <p>No expenses added yet.</p> // Display message if there are no expenses
+                expenses.length > 0 ? (
+                    <ul>
+                        {expenses.map((expense) => (
+                            <li key={expense.id}>
+                                {expense.name} : ${expense.amount}
+                                <button onClick={() => handleEdit(expense)}>Edit</button>
+                                <button onClick={() => handleDelete(expense.id)}>Delete</button>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No expenses added yet.</p>
+                )
             )}
         </div>
-    )
+    );
+    
 }
 
 export default Dashboard;

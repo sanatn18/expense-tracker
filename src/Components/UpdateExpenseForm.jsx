@@ -13,11 +13,6 @@ const UpdateExpenseForm = ({expense, onCancel}) => {
     const mutation = useMutation({
         mutationFn: async (updatedExpense) => {
 
-            // const checkResponse = await fetch(`http://localhost:5000/api/expenses/${updatedExpense.id}`);
-            // if (!checkResponse.ok) {
-            //     throw new Error('Expense not found');
-            // }
-
             const response = await fetch(`http://localhost:5000/api/expenses/${updatedExpense.id}`, {  // use the backend port here
                 method: 'PUT',
                 headers: {
@@ -27,10 +22,11 @@ const UpdateExpenseForm = ({expense, onCancel}) => {
             });
 
             if (!response.ok) {
-                if (response.status === 404){
+                // Handle the 404 error here
+                if (response.status === 404) {
+                    throw new Error('Expense not found');
+                } else {
                     throw new Error('Failed to update expense');
-                }else {
-                    throw new Error('Failed to Update')
                 }
             }
             return response.json();
