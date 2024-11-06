@@ -23,14 +23,16 @@ export const getAllExpenses = async(req, res) => {
 
 //after setting up mongo:
 export const addExpense = async(req, res) =>{
-    const { description, amount }= req.body;
+    const { amount, description, date }= req.body;
+    try {
+
     const expense = new Expense({
         userId: req.user.id, //associate the expense with the user thats logged in
         description,
         amount,
+        date,
     });
 
-    try {
         await expense.save();
         res.status(201).json(expense);
 
@@ -40,22 +42,38 @@ export const addExpense = async(req, res) =>{
 };
 //
 
-export const deleteExpense = (req, res) => {
+
+export const updateExpense = async(req, res) => {
     const { id } = req.params;
-    expenses = expenses.filter(expense => expense.id !== Number(id));
-    res.status(200).json({ message: 'Expense Delted', id});
+    const { amount, description, date} = req.body;
+
+    try{
+        const expense = await Expense.findOneAndUpdate(
+            {_id: id, userId: req.user.id},
+            { amount, description, date },
+            { new: true}
+        );
+        if (!expense) {
+            return res.status(404).json({ message: 'Expense not found' });
+        }
+        res.status(200).json(expense);
+    } catch (error) {
+        res.status(400).json({ message: 'Error updating expense' });
+    }
 };
 
-export const updateExpense = (req, res) => {
-    const { id } = req.params;
-    const updatedExpense = req.body;
 
-    let index = expenses.findIndex(expense => expense.id === Number(id));
-    if(index !== -1){
-        expenses[index] = updatedExpense; //in memory we update the expense
-        return res.status(200).json(updatedExpense);
+export const deleteExpense = async(req, res) => {
+    const { id } = req.params;
+    try{
+        const expense = await Expense.findOneAndDelete({ _id: id, userId: req.user.id});
+        if (!expense){
+            return res.status(404).json({message: 'Expense Not Found'});
+        }
+        res.status(200).json({message: 'Expense Delted'});
+    }catch(error){
+        res.status(500).json({message: 'Error occured deleting'});
     }
-    res.status(404).json({message: "Expense Not Found"});
 }
 
 
