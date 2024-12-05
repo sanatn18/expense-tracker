@@ -1,20 +1,20 @@
-// let expenses = [];
-
-// export const getExpenses = async() =>{
-//     return new Promise((resolve)=>{
-//         setTimeout(()=>{
-//             resolve(expenses);
-//         }, 1000); //1sec delay to mimic an api call.
-//     })
-// }
+import axios from 'axios';
 
 export const getExpenses = async () => {
-    const response = await fetch('http://localhost:5000/api/expenses')
-    if (!response.ok){
-        throw new Error("Failed to fetch expense");
-    }
-    return response.json();
+  const token = localStorage.getItem('token'); //store the JWT in localStorage
+  const response = await fetch('http://localhost:5000/api/expenses', {
+    headers: {
+      Authorization: `Bearer ${token}`, // Add Authorization header
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch expenses');
+  }
+
+  return response.json();
 };
+
 
 // export const addNewExpense = async(expense) => {
 //     return new Promise((resolve)=>{
@@ -26,17 +26,26 @@ export const getExpenses = async () => {
 // }
 
 export const addNewExpense = async (expense) => {
-    const response = await fetch('http://localhost:5000/api/expenses', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(expense)
-    });
-    if (!response.ok) {
-        throw new Error("Failed to add expense");
+    const token = localStorage.getItem('authToken'); //store the token in localstorage
+    if (!token) {
+        throw new Error('No authentication token found');
     }
-    return response.json(); // returns the newly created expense from the backend
+
+    try {
+        const response = await axios.post(
+            'http://localhost:5000/api/expenses',
+            expense,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`, // Attach token
+                },
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("Error in addNewExpense:", error.response?.data || error.message);
+        throw new Error("Failed to add expense");
+    } 
 };
 
 export const deleteExpense = async (id) => {

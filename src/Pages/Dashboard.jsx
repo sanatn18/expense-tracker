@@ -60,11 +60,11 @@ const Dashboard = () => {
                     <UpdateExpenseForm expense={editingExpense} onCancel={handleCancelEdit} />
                 </div>
             ) : (
-                expenses.length > 0 ? (
+                expenses && expenses.length > 0 ? ( // check if expenses is defined
                     <ul>
                         {expenses.map((expense) => (
                             <li key={expense.id}>
-                                {expense.name} : ${expense.amount}
+                                {expense.description} : ${expense.amount}
                                 <button onClick={() => handleEdit(expense)}>Edit</button>
                                 <button onClick={() => handleDelete(expense.id)}>Delete</button>
                             </li>

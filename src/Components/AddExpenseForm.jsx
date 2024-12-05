@@ -19,15 +19,16 @@ const AddExpenseForm = () => {
             dispatch(addExpense(newExpense)); // Dispatches the addExpense action to Redux
         },
     });
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (name && amount) {
             const newExpense = {
-                id: Date.now(),
-                name,
-                amount: parseFloat(amount),
+                description: name,  // match the backend field
+                amount: parseFloat(amount), // ensure it's a number
+                date: new Date().toISOString(), // ensrue a valid date
             };
-            //wrapped add mutation in try catch to fix the expense not being added issue when there were no hardcoded ones present
+    
             try {
                 await addMutation.mutateAsync(newExpense);
                 console.log("Expense added:", newExpense);
@@ -36,9 +37,11 @@ const AddExpenseForm = () => {
             }
             setName("");
             setAmount("");
+        }else {
+            console.error("Validation error: Name or amount is missing");
         }
     };
-
+    
     return(
         <form onSubmit={handleSubmit}>
             <input

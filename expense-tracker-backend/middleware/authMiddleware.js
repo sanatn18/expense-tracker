@@ -4,23 +4,12 @@ dotenv.config();
 
 const secret = process.env.JWT_SECRET; //secret is needed to verify tokens later, ensuring they haven’t been tampered with.
 
-// export const authenticateToken = (req, res, next) => {
-//     const token = req.headers['authorization']?.split(' ')[1]; //check for the authorization header and use split(' ')[1] to get just the token part (the second part after "Bearer").
-//     if(!token) return res.sendStatus(401);
-
-//     jwt.verify(token, secret, (err, user)=>{ //uses jwt.verify to check if the token is valid
-//         if(err) return res.sendStatus(403);
-//         req.user = user; //user contains the decoded information from the token (like user.id). This assigns user to req.user, which can be accessed in the next middleware or route to identify the logged-in user
-//         next(); //to proceed with the request, allowing the user access to the protected route.
-//     });
-// };
-
 export const authenticateToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
-    console.log("Authorization Header:", authHeader); // Check if the header exists
+    console.log("Authorization Header:", authHeader); // check if the header exists
 
     const token = authHeader?.split(' ')[1];
-    console.log("Token Extracted:", token); // Verify if the token is correctly extracted
+    console.log("Token Extracted:", token); // verify if the token is correctly extracted
 
     if (!token) {
         console.log("Token missing. Sending 401.");
@@ -34,7 +23,7 @@ export const authenticateToken = (req, res, next) => {
         }
 
         console.log("JWT Verified Successfully. User:", user); // Log the decoded user
-        req.user = user;
+        req.user = user; // Attach user info to the request
         next();
     });
 };

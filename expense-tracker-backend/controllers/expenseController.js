@@ -11,6 +11,7 @@ export const getAllExpenses = async(req, res) => {
         const expenses = await Expense.find({userId: req.user.id});
         res.json(expenses)
     } catch (error) {
+        console.error("Error fetching expenses:", error);
         res.status(500).json({ message: 'Error fetching expense '})
     }
 };
@@ -24,19 +25,34 @@ export const getAllExpenses = async(req, res) => {
 //after setting up mongo:
 export const addExpense = async(req, res) =>{
     const { amount, description, date }= req.body;
+    console.log("Received data:", req.body);
+
+    if (!description || typeof description !== "string") {
+        return res.status(400).json({ message: "Invalid or missing description" });
+    }
+
+    if (amount === undefined || typeof amount !== "number" || amount <= 0) {
+        return res.status(400).json({ message: "Invalid or missing amount" });
+    }
+
+    if (!date || isNaN(new Date(date))) {
+        return res.status(400).json({ message: "Invalid or missing date" });
+    }
+
     try {
 
-    const expense = new Expense({
-        userId: req.user.id, //associate the expense with the user thats logged in
-        description,
-        amount,
-        date,
+        const expense = new Expense({
+            userId: req.user.id, //associate the expense with the user thats logged in
+            description,
+            amount,
+            date,
     });
 
         await expense.save();
         res.status(201).json(expense);
 
     } catch (error) {
+        console.error("Error adding expense:", error);
         res.status(400).json({message: 'Error adding expense'})
     }
 };
@@ -46,6 +62,18 @@ export const addExpense = async(req, res) =>{
 export const updateExpense = async(req, res) => {
     const { id } = req.params;
     const { amount, description, date} = req.body;
+
+    if (description && typeof description !== "string") {
+        return res.status(400).json({ message: "Invalid description" });
+    }
+
+    if (amount !== undefined && (typeof amount !== "number" || amount <= 0)) {
+        return res.status(400).json({ message: "Invalid amount" });
+    }
+
+    if (date && isNaN(new Date(date))) {
+        return res.status(400).json({ message: "Invalid date" });
+    }
 
     try{
         const expense = await Expense.findOneAndUpdate(
