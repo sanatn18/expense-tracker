@@ -15,16 +15,6 @@ export const getExpenses = async () => {
   return response.json();
 };
 
-
-// export const addNewExpense = async(expense) => {
-//     return new Promise((resolve)=>{
-//         setTimeout(()=>{
-//             expenses.push(expense);
-//             resolve(expense);
-//         }, 1000);
-//     })
-// }
-
 export const addNewExpense = async (expense) => {
     const token = localStorage.getItem('authToken'); //store the token in localstorage
     if (!token) {
@@ -49,8 +39,17 @@ export const addNewExpense = async (expense) => {
 };
 
 export const deleteExpense = async (id) => {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        throw new Error('No authentication token found');
+    }
+
     const response = await fetch(`http://localhost:5000/api/expenses/${id}`, {
         method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}` // Add authorization header
+        },
+        
     });
     if (!response.ok) {
         throw new Error("Failed to delete expense");
@@ -59,12 +58,18 @@ export const deleteExpense = async (id) => {
 };
 
 export const updateExpenseAPI = async(updatedExpense) =>{
+    const token = localStorage.getItem('authToken');
     const response = await fetch(`http://localhost:5000/api/expenses/${updatedExpense.id}`,{
         method:'PUT',
         headers: {
             'Content-Type':'application/json',
+            'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(updatedExpense)
+        body: JSON.stringify({
+            description: updatedExpense.description,
+            amount: updatedExpense.amount,
+            date: updatedExpense.date
+        })
 
     });
     if (!response.ok){

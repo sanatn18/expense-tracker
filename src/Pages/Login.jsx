@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
 import { useQueryClient } from "@tanstack/react-query";
 
@@ -75,6 +75,9 @@ const Login = () => {
         <button type="submit">Login</button>
       </form>
       {error && <p style={{ color: "red" }}>{error}</p>}
+      <div>
+        <Link to="/register">New user? Click here to register</Link>
+      </div>
     </div>
   );
 };

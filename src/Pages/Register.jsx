@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Register = () => {
   const [username, setUsername] = useState("");
@@ -28,6 +28,7 @@ const Register = () => {
   };
 
   return (
+    <div>
     <form onSubmit={handleSubmit}>
       <input
         type="text"
@@ -43,6 +44,12 @@ const Register = () => {
       />
       <button type="submit">Register</button>
     </form>
+    <div>
+    <Link to="/login" >
+        Already registered? Click here to Login
+    </Link>
+    </div>
+    </div>
   );
 };
 
