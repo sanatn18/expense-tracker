@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "../services/authService";
 import { useQueryClient } from "@tanstack/react-query";
+import '../styles/Login.css'
 
 const Login = () => {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -49,35 +50,40 @@ const Login = () => {
   };
 
   return (
-    <div>
+    <div className="login-container">
+      <div className="login-form">
       <h2>Login</h2>
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Username:</label>
           <input
+            className="login-input"
             type="text"
             name="username"
+            placeholder="Username"
             value={formData.username}
             onChange={handleChange}
             required
           />
         </div>
         <div>
-          <label>Password:</label>
+
           <input
+            className="login-input"
             type="password"
             name="password"
+            placeholder="Password"
             value={formData.password}
             onChange={handleChange}
             required
           />
         </div>
-        <button type="submit">Login</button>
+        <button className="login-button" type="submit">Login</button>
       </form>
       {error && <p style={{ color: "red" }}>{error}</p>}
-      <div>
+      <div className="register-link">
         <Link to="/register">New user? Click here to register</Link>
       </div>
+    </div>
     </div>
   );
 };

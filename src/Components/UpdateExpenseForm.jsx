@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { updateExpense } from "../redux/expensesSlice";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import "../styles/UpdateExpenseForm.css"
 
 const UpdateExpenseForm = ({expense, onCancel}) => {
     const [description, setDescription] = useState(expense.description);
@@ -62,20 +63,39 @@ const UpdateExpenseForm = ({expense, onCancel}) => {
     }, [expense]);
 
     return(
+        <div className="update-expense-container">
+            <div className="update-expense-form-wrapper">
+                <h2>Update Expense</h2>
         <form onSubmit={handleSubmit}>
             <input
+                className="update-expense-input"
                 type="text"
                 value={description}
                 onChange={(e)=>setDescription(e.target.value)}
             />
             <input
+                className="update-expense-input"
                 type="text"
                 value={amount}
                 onChange={(e)=>setAmount(e.target.value)}
             />
-            <button type="submit">Update Expense</button>
-            <button type="button" onClick={onCancel}>Cancel</button>
+            <div className="update-expense-button-wrapper">
+            <button 
+                className="update-expense-button" 
+                type="submit">
+                    Update 
+            </button>
+            
+            <button 
+                className="cancel-button"
+                type="button" 
+                onClick={onCancel}>
+                    Cancel
+            </button>
+            </div>
         </form>
+        </div>
+        </div>
     );
 };
 

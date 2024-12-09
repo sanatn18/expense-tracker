@@ -1,0 +1,89 @@
+.dashboard-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+  
+  .total-expenses {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: rgb(179, 28, 189);
+  }
+  
+  .dashboard-content {
+    width: 100%;
+    max-width: 1200px;
+  }
+  
+  .expenses-table {
+    width: 88%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+  }
+  
+  .expenses-table th,
+  .expenses-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 0.0625rem solid #ddd;
+  }
+  
+  .expenses-table th {
+    background-color: #d3d3d3;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+  }
+  
+  .expenses-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  .action-icons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+  }
+  
+  .edit-icon,
+  .delete-icon {
+    cursor: pointer;
+    transition: color 0.3s ease;
+  }
+  
+  .edit-icon:hover {
+    color: #369eee;
+  }
+  
+  .delete-icon:hover {
+    color: #e34959;
+  }
+  
+  .no-expenses {
+    text-align: center;
+    font-size: 1.25rem;
+    color: #666;
+    padding: 2rem 0;
+  }
+  
+  @media (max-width: 768px) {
+    .dashboard-container {
+      padding: 1.5rem;
+    }
+  
+    .expenses-table th,
+    .expenses-table td {
+      padding: 0.5rem;
+      font-size: 0.875rem;
+    }
+  }

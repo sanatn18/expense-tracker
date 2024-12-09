@@ -2,6 +2,8 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { useQueryClient } from '@tanstack/react-query';
+import { PowerOff } from 'lucide-react';
+import '../Styles/LogoutButton.css'
 
 const LogoutButton = () => {
     const navigate = useNavigate();
@@ -20,7 +22,13 @@ const LogoutButton = () => {
     };
 
     return (
-        <button onClick={handleLogout}>Logout</button>
+        <button 
+            className="logout-button" 
+            onClick={handleLogout}
+            title='Logout'
+        >
+                <PowerOff size={24} />
+        </button>
     );
 };
 

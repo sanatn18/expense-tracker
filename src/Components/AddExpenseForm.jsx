@@ -3,6 +3,7 @@ import { addExpense } from '../redux/expensesSlice';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { addNewExpense } from '../services/expenseService';
 import { useDispatch } from 'react-redux';
+import "../styles/AddExpenseForm.css"
 
 const AddExpenseForm = () => {
     const [name, setName] = useState('');
@@ -43,21 +44,28 @@ const AddExpenseForm = () => {
     };
     
     return(
+        <div className="add-expense-container">
+            <div className="add-expense-form-wrapper">
+            <h2>Add New Expense</h2>
         <form onSubmit={handleSubmit}>
             <input
+                className="add-expense-input"
                 type="text"
                 value={name}
                 onChange={(e)=>setName(e.target.value)}
-                placeholder='Expense Name'
+                placeholder='Description'
             />
             <input
-                type="text"
+                className="add-expense-input"
+                type="number"
                 value={amount}
                 onChange={(e)=>setAmount(e.target.value)}
                 placeholder='Amount'
             />
-            <button type="submit"> Add Expense</button>
+            <button className="add-expense-button" type="submit"> Add Expense</button>
         </form>
+        </div>
+        </div>
     );
 };
 

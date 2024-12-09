@@ -7,6 +7,8 @@ import UpdateExpenseForm from "../Components/UpdateExpenseForm.jsx";
 import { removeExpense } from "../redux/expensesSlice.js";
 import LogoutButton from "../Components/LogoutButton.jsx";
 import { useNavigate } from "react-router-dom";
+import { Pencil, Trash2 } from 'lucide-react'; 
+import '../styles/Dashboard.css'
 
 
 const Dashboard = () => {
@@ -98,31 +100,66 @@ const Dashboard = () => {
     if(error) return <div>Error Fetching Expenses</div>
 
     return (
-        <div>
-            <div>
+        <div className="dashboard-container">
+            <div className="dashboard-header">
+            <div className="total-expenses">
                 Total Expenses: ${totalExpenses.toFixed(2)}
             </div>
-            <h1>Expense Tracker Dashboard</h1>
-            <AddExpenseForm />
             <LogoutButton />
+            </div>
+
+            <h1>Expense Tracker Dashboard</h1>
+            {!editingExpense && (
+                <div className="dashboard-content">
+                    <AddExpenseForm />
+                </div>
+            )}
+            {/* <div className="dashboard-content">
+            <AddExpenseForm />
+            </div> */}
             {editingExpense ? (
                 <div>
-                    <h2>Update Expense</h2>
                     <UpdateExpenseForm expense={editingExpense} onCancel={handleCancelEdit} />
                 </div>
             ) : (
                 expenses && expenses.length > 0 ? ( // check if expenses is defined
-                    <ul>
-                        {expenses.map((expense) => (
-                            <li key={expense._id}>
-                                {expense.description} : ${expense.amount}
-                                <button onClick={() => handleEdit(expense)}>Edit</button>
-                                <button onClick={() => handleDelete(expense._id)}>Delete</button>
-                            </li>
-                        ))}
-                    </ul>
+                    <table className="expenses-table">
+                        <thead>
+                            <tr>
+                                <th>Description</th>
+                                <th>Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {expenses.map((expense) => (
+                                <tr key={expense._id}>
+                                    <td data-label="Description">{expense.description}</td>
+                                    <td data-label="Amount">${expense.amount}</td>
+                                    <td data-label="Actions">
+                                        <div className="action-icons">
+                                            <Pencil 
+                                                className="edit-icon" 
+                                                size={20} 
+                                                onClick={() => handleEdit(expense)}
+                                                title="Edit Expense"
+                                            />
+                                            <Trash2 
+                                                className="delete-icon" 
+                                                size={20} 
+                                                onClick={() => handleDelete(expense._id)}
+                                                title="Delete Expense"
+                                            />
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
                 ) : (
-                    <p>No expenses added yet.</p>
+                    <div className="no-expenses">
+                        <p>No expenses added yet.</p>
+                    </div>
                 )
             )}
         </div>
