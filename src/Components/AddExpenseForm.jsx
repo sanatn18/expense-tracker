@@ -6,7 +6,7 @@ import { useDispatch } from 'react-redux';
 import "../styles/AddExpenseForm.css"
 
 const AddExpenseForm = () => {
-    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const dispatch = useDispatch(); // initialize the redux dispatch function, allows us to send actions to redux store.
     const queryClient = useQueryClient();
@@ -23,9 +23,25 @@ const AddExpenseForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if (name && amount) {
+
+        if (!description.trim()) {
+            window.alert("Description can't be empty");
+            return;
+        }
+
+        if (!amount.trim()) {
+            window.alert("Amount can't be empty");
+            return;
+        }
+
+        // Confirm adding expense
+        const isConfirmed = window.confirm("Are you sure you want to add this expense?");
+        if (!isConfirmed) return;
+
+
+        if (description && amount) {
             const newExpense = {
-                description: name,  // match the backend field
+                description: description,  // match the backend field
                 amount: parseFloat(amount), // ensure it's a number
                 date: new Date().toISOString(), // ensrue a valid date
             };
@@ -36,7 +52,7 @@ const AddExpenseForm = () => {
             } catch (error) {
                 console.error("Error adding expense:", error);
             }
-            setName("");
+            setDescription("");
             setAmount("");
         }else {
             console.error("Validation error: Name or amount is missing");
@@ -51,8 +67,8 @@ const AddExpenseForm = () => {
             <input
                 className="add-expense-input"
                 type="text"
-                value={name}
-                onChange={(e)=>setName(e.target.value)}
+                value={description}
+                onChange={(e)=>setDescription(e.target.value)}
                 placeholder='Description'
             />
             <input

@@ -49,6 +49,22 @@ const UpdateExpenseForm = ({expense, onCancel}) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!description || !description.toString().trim()) {
+            window.alert("Description can't be empty");
+            return;
+        }
+
+        // first we convert the amount to string to use trim() since it doesnt work on numbers
+        const amountStr = amount.toString();
+        if (!amountStr.trim()) {
+            window.alert("Amount can't be empty");
+            return;
+        }
+
+        const isConfirmed = window.confirm("Are you sure you want to update?");
+        if (!isConfirmed) return;
+        
         const updatedExpense = {
             ...expense,
             description,
@@ -75,7 +91,7 @@ const UpdateExpenseForm = ({expense, onCancel}) => {
             />
             <input
                 className="update-expense-input"
-                type="text"
+                type="number"
                 value={amount}
                 onChange={(e)=>setAmount(e.target.value)}
             />

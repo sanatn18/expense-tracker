@@ -5,10 +5,22 @@ import '../styles/Register.css';
 const Register = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (username.length < 2) {
+      setError("Username cannot be less than 2 characters");
+      return;
+    }
+
+    if (password.length < 8) {
+      setError("Password cannot be less than 8 characters");
+      return;
+    }
+
     try {
       const response = await fetch("http://localhost:5000/api/auth/register", {
         method: "POST",
@@ -17,11 +29,16 @@ const Register = () => {
       });
 
       const data = await response.json();
+
       if (response.ok) {
         alert("Registration successful. Redirecting to login.");
         navigate("/login"); // Redirect to login page (replace with your method)
       } else {
-        alert(data.message || "Error registering user.");
+         if (data.message === "User already exists") {
+          setError("Username you entered is taken");
+        } else {
+          setError(data.message || "Error registering user");
+        }
       }
     } catch (error) {
       console.error("Error:", error);
@@ -32,6 +49,7 @@ const Register = () => {
     <div className="register-container">
       <div className="register-form">
         <h2>Register</h2>
+        {error && <div className="error-message">{error}</div>}
     <form onSubmit={handleSubmit}>
       <input
       className="register-input"

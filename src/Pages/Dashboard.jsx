@@ -10,26 +10,34 @@ import { useNavigate } from "react-router-dom";
 import { Pencil, Trash2 } from 'lucide-react'; 
 import '../styles/Dashboard.css'
 
+const CURRENCY_SYMBOLS = {
+    'USD': '$',
+    'INR': '₹',
+    'EUR': '€',
+    'GBP': '£',
+    'JPY': '¥'
+};
 
 const Dashboard = () => {
     const navigate = useNavigate();
 
     const [editingExpense, setEditingExpense] = useState(null); //to track the expense thats being edited
+    const [selectedCurrency, setSelectedCurrency] = useState(() => {
+        return localStorage.getItem('selectedCurrency') || 'INR';
+    });
 
-    // Authentication check function
     const isAuthenticated = () => !!localStorage.getItem('authToken');
 
-
-    // Authentication and navigation effect
+    // authentication and navigation effect
     useEffect(() => {
-        // Redirect to login if not authenticated
+        // redirect to login if not authenticated
         if (!isAuthenticated()) {
             window.history.replaceState(null, '', '/login');
             navigate('/login', { replace: true });
             return;
         }
 
-        // Prevent accessing dashboard after logout
+        // prevent the user from accessing dashboard after logout
         const handlePopstate = () => {
             if (!isAuthenticated()) {
                 window.history.replaceState(null, '', '/login');
@@ -64,13 +72,6 @@ const Dashboard = () => {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
 
-    // const deleteMutation = useMutation(deleteExpense, {
-    //     onSuccess: (deletedExpenseID) => {
-    //         queryClient.invalidateQueries(['expenses']);
-    //         dispatch(deleteExpense(deletedExpenseID));
-    //     },
-    // });
-
     const deleteMutation = useMutation({
         mutationFn: deleteExpense, // Explicitly set the function
         onSuccess: (deletedExpenseID) => {
@@ -80,7 +81,10 @@ const Dashboard = () => {
     });
 
     const handleDelete = (id) =>{
-        deleteMutation.mutate(id);
+        const confirmDelete = window.confirm("Are you sure you want to delete?");
+        if (confirmDelete) {
+            deleteMutation.mutate(id);
+        }
     }
 
     const handleEdit = (expense) => { //set the expense to be edited
@@ -91,10 +95,16 @@ const Dashboard = () => {
         setEditingExpense(null);
     }
 
+    const handleCurrencyChange = (event) => {
+        const newCurrency = event.target.value;
+            setSelectedCurrency(newCurrency);
+            localStorage.setItem('selectedCurrency', newCurrency);// Save the selected currency to localStorage
+    }       
      // Additional authentication check
      if (!isAuthenticated()) {
         return null; // or redirect component
     }
+    
 
     if(isLoading) return <div>Loading...</div>
     if(error) return <div>Error Fetching Expenses</div>
@@ -103,8 +113,22 @@ const Dashboard = () => {
         <div className="dashboard-container">
             <div className="dashboard-header">
             <div className="total-expenses">
-                Total Expenses: ${totalExpenses.toFixed(2)}
+                Total Expenses: {CURRENCY_SYMBOLS[selectedCurrency]}{totalExpenses.toFixed(2)}
             </div>
+            <div className="currency-selector">
+                    <label htmlFor="currency-select">Currency: </label>
+                    <select 
+                        id="currency-select" 
+                        value={selectedCurrency} 
+                        onChange={handleCurrencyChange}
+                    >
+                        {Object.keys(CURRENCY_SYMBOLS).map(currency => (
+                            <option key={currency} value={currency}>
+                                {currency} ({CURRENCY_SYMBOLS[currency]})
+                            </option>
+                        ))}
+                    </select>
+                </div>
             <LogoutButton />
             </div>
 
@@ -114,9 +138,7 @@ const Dashboard = () => {
                     <AddExpenseForm />
                 </div>
             )}
-            {/* <div className="dashboard-content">
-            <AddExpenseForm />
-            </div> */}
+
             {editingExpense ? (
                 <div>
                     <UpdateExpenseForm expense={editingExpense} onCancel={handleCancelEdit} />
@@ -135,7 +157,9 @@ const Dashboard = () => {
                             {expenses.map((expense) => (
                                 <tr key={expense._id}>
                                     <td data-label="Description">{expense.description}</td>
-                                    <td data-label="Amount">${expense.amount}</td>
+                                    <td data-label="Amount">
+                                    {CURRENCY_SYMBOLS[selectedCurrency]}{expense.amount}
+                                    </td>
                                     <td data-label="Actions">
                                         <div className="action-icons">
                                             <Pencil 
